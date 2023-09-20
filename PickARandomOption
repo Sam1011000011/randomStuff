@@ -1,0 +1,21 @@
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+	// write your code here
+        Scanner sc=new Scanner(System.in);
+        System.out.println("enter the opts seperated by enter end ends the program");
+        String s= sc.next();
+        ArrayList<String> opts=new ArrayList<>();
+        while(!Objects.equals(s, "end")){
+            opts.add(s);
+            s= sc.nextLine();
+        }
+        int n= opts.size();
+        String res=opts.get((int)(Math.random()*n));
+        System.out.println("the pick is : "+res);
+    }
+}
