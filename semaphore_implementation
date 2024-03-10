@@ -1,0 +1,73 @@
+package com.company;
+
+import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class project2 {
+     static volatile int a=0;
+     AtomicInteger b=new AtomicInteger(10);
+     static semaphore s=new semaphore(1);
+     //the main method is for testing the semaphore
+    public static void main(String[] args) throws InterruptedException {
+        for( int i=0;i<100000;i++){
+            thread1 t1=new thread1();
+            thread1 t2=new thread1();
+            t2.start();
+            t1.start();
+            t2.join();
+            t1.join();
+                if(a!=4)
+                System.out.println(a);
+            a=0;
+            //System.out.println(i);
+    }
+        System.out.println("process finished");}
+    public static class thread1 extends Thread{
+        public void run(){
+            s.Wait();
+            a++;
+            a++;
+            s.Signal();
+        }
+}
+static class semaphore{
+    AtomicInteger flag=new AtomicInteger(0);
+    AtomicInteger count=new AtomicInteger();
+    AtomicInteger key=new AtomicInteger();
+    ArrayList<Thread> queue=new ArrayList<>();
+    public semaphore(int count){
+        this.count=new AtomicInteger(count);
+    }
+    public synchronized void Wait(){
+        key.set(1);
+        while(!key.compareAndSet(0,key.intValue())){
+            exchange(flag,key);
+        }
+        count.decrementAndGet();
+        if(count.intValue()<0){
+            Thread.currentThread().interrupt();
+            queue.add(Thread.currentThread());
+            flag.set(0);
+        }
+        else
+            flag.set(0);
+    }
+    public synchronized void Signal(){
+        key=new AtomicInteger(1);
+        while(!key.compareAndSet(0,key.intValue())){
+            exchange(flag,key);
+        }
+        count.incrementAndGet();
+        if(count.intValue()<=0){
+            if(!queue.isEmpty()){
+            Thread p=queue.removeFirst();
+            p.interrupted();}
+        }
+        flag.set(0);
+    }
+    public void exchange (AtomicInteger a, AtomicInteger b){
+        a.compareAndExchange(a.intValue(),b.compareAndExchange(b.intValue(),a.intValue()));
+    }
+}}
+
